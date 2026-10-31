@@ -44,6 +44,6 @@ clean `pip install -r requirements.txt`):**
 
 ## Blockers to public release (tracked here, not just in commit messages)
 
-1. **GPL-3.0 dependency.** `python-roborock` (used only by the Roborock adapter) is GPL-3.0-only; this project's own code is MIT. See `THIRD_PARTY_NOTICES.md`. Needs a deliberate decision (e.g. making the Roborock adapter a separate, clearly-GPL-licensed optional package, or accepting the dependency with clear documentation) before a public release under a project-wide MIT claim would be accurate.
+1. ~~GPL-3.0 dependency.~~ **Resolved 2026-10-31.** `python-roborock` relicensed GPL-3.0-only → Apache-2.0 at v5.34.0 (2026-07-20, PR #890); this project now pins `>=7.12.0`, verified Apache-2.0 directly against that tag's `LICENSE`/`pyproject.toml`. An MIT project depending on an Apache-2.0 library via plain `import` (not vendoring) is a standard, unproblematic combination — see `THIRD_PARTY_NOTICES.md`.
 2. **No real-device validation of anything beyond the runtime encode/decode path.** The router and translator are solid in isolation; nothing here has been shown to work against a real appliance.
 3. **`testing_infra/minimal_mqtt_broker.py` needs a clear, loud "do not use in production" marker** if it's ever referenced outside this repo's own test suite.

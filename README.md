@@ -48,9 +48,9 @@ python3 -m venv .venv
 ```
 
 `router/` and `translator/` (minus the Roborock adapter) have **zero**
-third-party dependencies. `python-roborock` is only needed if you use the
-Roborock adapter — it's licensed GPL-3.0-only, see `THIRD_PARTY_NOTICES.md`
-before depending on it from code under a different license.
+third-party dependencies. `python-roborock` (`>=7.12.0`, Apache-2.0 — see
+`THIRD_PARTY_NOTICES.md` for the verified license history) is only needed
+if you use the Roborock adapter.
 
 ## Run the tests
 
@@ -83,5 +83,5 @@ entirely on loopback with synthetic data.
 ## License
 
 This project's own code is MIT-licensed — see `LICENSE`. Third-party
-dependencies and their licenses (including a GPL-3.0 one) are listed in
-`THIRD_PARTY_NOTICES.md`.
+dependencies and their licenses are listed in `THIRD_PARTY_NOTICES.md`
+(`python-roborock`, pinned `>=7.12.0`, is Apache-2.0).

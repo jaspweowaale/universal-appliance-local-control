@@ -3,9 +3,10 @@
 ## python-roborock
 
 - **Used by:** `translator/adapters/roborock_b01.py` (`roborock.protocols.b01_q10_protocol`, `roborock.data.b01_q10.b01_q10_code_mappings`, `roborock.roborock_message`)
-- **License: GPL-3.0-only.**
-- **Not vendored.** This repository declares it as a runtime dependency (`requirements.txt`) and imports it; no `python-roborock` source code is copied into this repository.
-- **Why this matters:** GPL-3.0 is a strong copyleft license. This project's own code is MIT-licensed, but **the Roborock adapter has a hard runtime dependency on a GPL-3.0 library**. Anyone distributing this project together with `python-roborock` (e.g. as a bundled application, not just "import it from pip") should get their own legal read on what that means for their specific distribution — this notice is informational, not legal advice, and this is flagged as an **open item for the maintainer to resolve before any public release** (see `docs/ARCHITECTURE.md`, "Blockers to public release").
+- **License: Apache-2.0** (for the version range this project depends on — see below).
+- **Not vendored.** This repository declares it as a runtime dependency (`requirements.txt`, pinned `>=7.12.0`) and imports it; no `python-roborock` source code is copied into this repository — verified directly (only `import`/`from ... import` statements, no duplicated function bodies or data tables).
+- **License history, verified against the actual upstream source, not assumed:** `python-roborock` was GPL-3.0-only through v5.15.2, then relicensed to Apache-2.0 at **v5.34.0 (2026-07-20, PR #890, commit `a304471`, "Change license to apache 2.0")**. Confirmed independently via (a) PyPI's per-version `license_expression` metadata across the version range, and (b) the actual `LICENSE` file and `pyproject.toml` at the `v7.12.0` git tag (`license = "Apache-2.0"`). Authors per that tag's `pyproject.toml`: humbertogontijo, Lash-L, allenporter.
+- **This project depends on `>=7.12.0` specifically** (not just "latest") — comfortably inside the Apache-2.0 era, and the exact version this adapter was developed and tested against. Apache-2.0 does not impose copyleft requirements on dependents that merely `import` the library (as this project does) rather than redistribute its source — the main ongoing obligation is preserving this attribution notice, which this file does.
 - Project: https://github.com/Python-roborock/python-roborock
 
 ## Python-roborock/local_roborock_server

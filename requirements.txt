@@ -2,9 +2,13 @@
 # have zero third-party dependencies - standard library only.
 
 # Required only to use translator/adapters/roborock_b01.py:
-python-roborock>=4.20.0
-# NOTE: python-roborock is licensed GPL-3.0-only. See THIRD_PARTY_NOTICES.md
-# before depending on this adapter from a project with a different license.
+python-roborock>=7.12.0
+# NOTE: pinned to >=7.12.0 deliberately, not just "whatever's latest" -
+# python-roborock relicensed GPL-3.0-only -> Apache-2.0 at v5.34.0 (2026-07-20,
+# PR #890, commit a304471). 7.12.0+ is comfortably inside the Apache-2.0 era
+# and is what this adapter was actually developed/tested against. Do not
+# lower this bound without re-checking the license of whatever you lower it
+# to - see THIRD_PARTY_NOTICES.md.
 
 # Required only for testing_infra/ (certificate generation + the MQTT-TLS
 # integration test) - not needed to use router/ or translator/ on their own:
