@@ -1,0 +1,15 @@
+# Core router + translator (router/, translator/, integration_contract.py)
+# have zero third-party dependencies - standard library only.
+
+# Required only to use translator/adapters/roborock_b01.py:
+python-roborock>=4.20.0
+# NOTE: python-roborock is licensed GPL-3.0-only. See THIRD_PARTY_NOTICES.md
+# before depending on this adapter from a project with a different license.
+
+# Required only for testing_infra/ (certificate generation + the MQTT-TLS
+# integration test) - not needed to use router/ or translator/ on their own:
+cryptography>=42
+aiomqtt>=2
+
+# Optional, for running the test suites:
+pytest>=8
