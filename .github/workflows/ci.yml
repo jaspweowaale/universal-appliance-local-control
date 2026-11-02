@@ -1,0 +1,46 @@
+name: offline-tests
+
+# Offline/simulator tests only: no manufacturer credentials, no appliance or private-network
+# calls, synthetic fixtures + a localhost MQTT-TLS broker. Safe to run in public CI.
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read   # minimal: CI only reads the repo
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install constrained dependencies (offline-capable only)
+        run: |
+          python -m pip install --upgrade pip
+          pip install "python-roborock>=7.12.0,<9" "aiomqtt>=2,<3" "cryptography>=42"
+
+      - name: Router suites (offline + hardening)
+        run: |
+          python router/test_router_offline.py
+          python router/test_router_hardening.py
+
+      - name: Translator suites (offline + hardening)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python translator/test_translator_offline.py
+          python translator/test_translator_hardening.py
+
+      - name: B01 cloud-free integration (encode -> local broker -> device model -> decode)
+        run: python testing_infra/b01_cloudfree_integration_test.py
+
+      - name: B01 local bridge (correlation / timeout / error / concurrency)
+        run: python testing_infra/b01_bridge_test.py
