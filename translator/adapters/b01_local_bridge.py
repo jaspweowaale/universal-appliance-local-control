@@ -38,6 +38,11 @@ class B01LocalBridge:
         self._waiters: list[tuple[int | None, asyncio.Future]] = []
         self._listener: asyncio.Task | None = None
         self.decode_errors = 0  # observable: malformed inbound messages survived
+        # The Q10 B01 envelope carries no echoed request id, so DP-code correlation alone
+        # cannot disambiguate two in-flight commands that expect the SAME DP (e.g. START_CLEAN
+        # and STOP both reply on DP 121). Serialize commands to guarantee at most one waiter
+        # is live at a time, so a matching reply can only belong to the current command.
+        self._send_lock = asyncio.Lock()
 
     async def start(self) -> None:
         await self._client.subscribe(self._status_topic)
@@ -68,17 +73,18 @@ class B01LocalBridge:
         expect_dp: the DP code the response must carry to be matched to this command
         (None = accept the next decoded response). Raises B01CommandTimeout on timeout.
         """
-        fut: asyncio.Future = asyncio.get_running_loop().create_future()
-        self._waiters.append((expect_dp, fut))
-        rmsg = encode_mqtt_payload(command, params)
-        await self._client.publish(self._cmd_topic, rmsg.payload)
-        try:
-            return await asyncio.wait_for(fut, timeout=timeout)
-        except asyncio.TimeoutError as ex:
-            if (expect_dp, fut) in self._waiters:
-                self._waiters.remove((expect_dp, fut))
-            raise B01CommandTimeout(
-                f"no response carrying DP {expect_dp} within {timeout}s for {command.name}") from ex
+        async with self._send_lock:  # serialize: at most one live waiter at a time
+            fut: asyncio.Future = asyncio.get_running_loop().create_future()
+            self._waiters.append((expect_dp, fut))
+            rmsg = encode_mqtt_payload(command, params)
+            await self._client.publish(self._cmd_topic, rmsg.payload)
+            try:
+                return await asyncio.wait_for(fut, timeout=timeout)
+            except asyncio.TimeoutError as ex:
+                if (expect_dp, fut) in self._waiters:
+                    self._waiters.remove((expect_dp, fut))
+                raise B01CommandTimeout(
+                    f"no response carrying DP {expect_dp} within {timeout}s for {command.name}") from ex
 
     async def aclose(self) -> None:
         if self._listener:

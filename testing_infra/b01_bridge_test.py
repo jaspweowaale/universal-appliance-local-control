@@ -86,6 +86,16 @@ async def main():
         check("listener still works after malformed message (STOP->IDLE 121=3)",
               {k.code: v for k, v in d2.items()}.get(121) == 3)
 
+        # 6) CONCURRENCY edge case: two commands expecting the SAME DP(121) fired together must
+        # each receive their OWN reply, never cross-matched (serialization guarantees this).
+        async def c_start(): return await bridge.send_command(dp(201), 1, expect_dp=121, timeout=5)
+        async def c_stop():  return await bridge.send_command(dp(206), None, expect_dp=121, timeout=5)
+        r_start, r_stop = await asyncio.gather(c_start(), c_stop())
+        check("concurrency: START_CLEAN reply is its own (121=5), not STOP's",
+              {k.code: v for k, v in r_start.items()}.get(121) == 5)
+        check("concurrency: STOP reply is its own (121=3), not START's",
+              {k.code: v for k, v in r_stop.items()}.get(121) == 3)
+
         await bridge.aclose()
     dtask.cancel(); srv.close()
     try: await asyncio.wait_for(dtask, timeout=1)
