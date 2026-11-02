@@ -85,3 +85,24 @@ entirely on loopback with synthetic data.
 This project's own code is MIT-licensed — see `LICENSE`. Third-party
 dependencies and their licenses are listed in `THIRD_PARTY_NOTICES.md`
 (`python-roborock`, pinned `>=7.12.0`, is Apache-2.0).
+
+## Project status (what works vs. what is experimental)
+
+This framework (manufacturer-independent router + adapter-based translator) is offline-tested.
+Appliance-specific maturity is tracked honestly in [`docs/STATUS_MATRIX.md`](docs/STATUS_MATRIX.md).
+
+**Roborock Q10 (B01)** — see [`docs/ROBOROCK_Q10.md`](docs/ROBOROCK_Q10.md). The B01 command
+path is **tested offline only** (localhost MQTT-TLS broker + python-roborock's device simulator);
+it has **not** been verified against a physical ss09, and cloud-independent hardware operation is
+**blocked** on device-held bootstrap material. Reproduce:
+
+```bash
+pip install "python-roborock>=7.12.0" aiomqtt cryptography
+python testing_infra/b01_cloudfree_integration_test.py   # command->broker->device-model->decode (5/5)
+python testing_infra/b01_bridge_test.py                  # HA-side adapter: correlation/timeout/errors (7/7)
+```
+
+**Toshiba (Midea M-Smart V3)** local control is verified on real hardware and lives in a separate
+repository: https://github.com/jaspweowaale/toshiba-tsmartlife-local . This repo does not duplicate it.
+
+Nothing here contacts a manufacturer cloud; all tests run against a local broker + simulator.
