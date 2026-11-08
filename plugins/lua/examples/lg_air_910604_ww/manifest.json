@@ -1,0 +1,90 @@
+{
+  "manifest_version": "1.0",
+  "plugin": {
+    "id": "lg.thinq2_tlv.air_910604_ww",
+    "name": "LG PuriCare 360 (AIR_910604_WW) decoder",
+    "version": "0.1.0",
+    "language": "lua",
+    "entrypoint": "handler.lua",
+    "maintainers": ["@jaspweowaale"],
+    "license": "MIT",
+    "source_provenance": "independent implementation from a documented field list; no GPL code copied (see handler.lua header)"
+  },
+  "requires": {
+    "min_ualc_api_version": "1.0",
+    "max_ualc_api_version": "1.x",
+    "lua_version": "5.4+"
+  },
+  "supports": {
+    "manufacturers": ["lg"],
+    "protocol_families": ["thinq2_tlv"],
+    "models": [
+      {
+        "model_id": "AIR_910604_WW",
+        "marketing_names": ["PuriCare 360"],
+        "device_class": "air_purifier",
+        "firmware_ranges": [],
+        "notes": "Regional SKUs sharing this ThinQ model id have been observed to differ in their mode enum. This handler claims the model id only, not every SKU behind it."
+      }
+    ]
+  },
+  "operations": [
+    "describe",
+    "identify",
+    "parse_inbound",
+    "decode_state",
+    "describe_controls",
+    "supported_commands",
+    "validate_command",
+    "is_ack_for"
+  ],
+  "capabilities": {
+    "read": [
+      "power",
+      "mode",
+      "fan_speed",
+      "pm1",
+      "pm25",
+      "pm10",
+      "air_quality_index",
+      "odor_index",
+      "error_code",
+      "filter_remaining_hours",
+      "filter_life_hours"
+    ],
+    "write": [],
+    "partial_state_updates": true,
+    "reports_incompatibility": true
+  },
+  "authentication": {
+    "required": false,
+    "handled_by": "ualc_core",
+    "plugin_receives_credentials": false
+  },
+  "permissions": {
+    "filesystem": "none",
+    "network": "none",
+    "subprocess": "none",
+    "environment": "none"
+  },
+  "limits": {
+    "cpu_seconds": 2,
+    "address_space_bytes": 268435456,
+    "open_files": 16,
+    "request_timeout_seconds": 5.0,
+    "max_response_bytes": 262144
+  },
+  "support_status": {
+    "level": "DECODED",
+    "verification_source": "none",
+    "hardware_tested": false,
+    "fixtures": "synthetic",
+    "known_limitations": [
+      "No outbound command encoding: the frame checksum polynomial is not independently verified.",
+      "Inbound checksum trailer is not validated.",
+      "Never executed against a physical appliance.",
+      "Only the 0xA7 dialect is decoded; 0x87 is rejected explicitly."
+    ]
+  },
+  "enabled_by_default": false
+}
