@@ -19,10 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
-
----
-
-This license covers this project's own source code only (router/,
-translator/ excluding its reliance on third-party libraries, integration_contract.py,
-testing_infra/, examples/). It does not cover, and does not relicense, any
-third-party dependency. See THIRD_PARTY_NOTICES.md.
