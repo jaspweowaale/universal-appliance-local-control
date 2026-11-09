@@ -106,3 +106,15 @@ python testing_infra/b01_bridge_test.py                  # HA-side adapter: corr
 repository: https://github.com/jaspweowaale/toshiba-tsmartlife-local . This repo does not duplicate it.
 
 Nothing here contacts a manufacturer cloud; all tests run against a local broker + simulator.
+
+## Support Independent Development
+
+This project is independently researched and maintained.
+
+If you find the work useful, you can support continued research, testing,
+documentation, hosting, and development through Ko-fi.
+
+**Support:** https://ko-fi.com/jasperwaale
+
+Contributions are voluntary and do not influence technical findings or project
+decisions.

@@ -1,0 +1,6 @@
+# GitHub Sponsors is deliberately NOT listed here. It was verified inactive for
+# this account on 2026-11-09: https://github.com/sponsors/jaspweowaale returns
+# HTTP 200 but serves the ordinary user profile page, with no sponsors listing.
+# Add a `github: [jaspweowaale]` entry only once Sponsors is approved and live.
+custom:
+  - https://ko-fi.com/jasperwaale
