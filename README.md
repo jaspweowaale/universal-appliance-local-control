@@ -26,6 +26,9 @@ without pretending we verified something we could not.
 
 That constraint is the premise of the project, not a caveat on it.
 
+For the reasoning behind the project -- local ownership, longevity, why it avoids
+firmware replacement, and its current limits -- see [docs/WHY_UALC.md](docs/WHY_UALC.md).
+
 ## Community contributions are a primary development goal
 
 **UALC is designed so other developers can add support for appliance brands
