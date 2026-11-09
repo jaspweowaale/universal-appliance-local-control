@@ -14,13 +14,20 @@ permissions:
 jobs:
   offline-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      # Ubuntu's own packaged interpreter, used only to exercise the Lua
+      # plugin host. Without it the Lua suites would skip silently in CI and
+      # we would lose that coverage. UALC itself does not require Lua unless
+      # you run Lua plugins.
+      - name: Install Lua (distro package, for the plugin host tests)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends lua5.4
 
       - name: Install constrained dependencies (offline-capable only)
         run: |
@@ -44,3 +51,34 @@ jobs:
 
       - name: B01 local bridge (correlation / timeout / error / concurrency)
         run: python testing_infra/b01_bridge_test.py
+
+      # --- extension points: model profiles and the Lua plugin host --------
+
+      - name: Model profile validation (loads every file under devices/)
+        env:
+          PYTHONPATH: translator:testing_infra:.
+        run: python testing_infra/profile_validation_test.py
+
+      - name: Adapter contract (Level-1 profile vs Level-2 Lua handler, must agree)
+        env:
+          PYTHONPATH: translator:testing_infra:.
+          UALC_LUA_BINARY: lua5.4
+        run: python testing_infra/adapter_contract_test.py
+
+      - name: Lua plugin sandbox and host behaviour
+        env:
+          PYTHONPATH: translator:testing_infra:.
+          UALC_LUA_BINARY: lua5.4
+        run: python testing_infra/plugin_security_test.py
+
+      # The Lua suites are written to skip cleanly when no interpreter is
+      # present, which is right for contributors but would hide a regression
+      # in CI. Fail the build if they skipped here.
+      - name: Assert the Lua suites actually ran
+        env:
+          PYTHONPATH: translator:testing_infra:.
+          UALC_LUA_BINARY: lua5.4
+        run: |
+          out=$(python testing_infra/adapter_contract_test.py)
+          echo "$out" | tail -3
+          echo "$out" | grep -q "skipped=0" || { echo "Lua half skipped in CI"; exit 1; }

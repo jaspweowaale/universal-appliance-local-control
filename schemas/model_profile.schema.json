@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaspweowaale/universal-appliance-local-control/schemas/model_profile.schema.json",
+  "title": "UALC model profile",
+  "description": "Declarative Level-1 appliance model profile. Data only: a profile must not contain executable expressions, credentials or shell commands. This schema is the published spec for editors and third-party tooling; what CI actually enforces is validate_profile() in translator/profiles.py, which is stdlib-only so UALC gains no jsonschema dependency. If the two ever disagree, the Python validator wins and this file is the bug.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "model", "protocol", "fields", "support_status"],
+  "properties": {
+    "profile_version": {
+      "description": "Profile format version. Only 1.0 exists.",
+      "const": "1.0"
+    },
+    "model": {
+      "type": "object",
+      "required": ["manufacturer", "model_id", "device_class"],
+      "properties": {
+        "manufacturer": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$",
+          "description": "Lowercase. Must match the devices/<dir> name."
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier the appliance or its cloud reports, verbatim."
+        },
+        "device_class": {
+          "enum": ["air_purifier", "air_conditioner", "refrigerator", "vacuum",
+                   "washer", "dryer", "dishwasher", "water_heater",
+                   "dehumidifier", "oven", "other"]
+        },
+        "marketing_names": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "firmware_ranges": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Firmware versions actually observed. An empty array means UNKNOWN, not ALL."
+        }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "required": ["family", "codec", "parameters"],
+      "properties": {
+        "family": {"type": "string", "minLength": 1},
+        "codec": {
+          "enum": ["lg_thinq2_tlv"],
+          "description": "Must name a codec implemented in UALC core. A genuinely new protocol is a Level-3 contribution, not a profile."
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Codec-specific. Every key is validated against a closed per-codec list; unrecognised keys are rejected.",
+          "additionalProperties": false,
+          "properties": {
+            "envelope_prefix": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {"type": "integer", "minimum": 0, "maximum": 255}
+            },
+            "envelope_prefix_offset": {"type": "integer", "minimum": 0, "maximum": 64},
+            "dialect_offset": {"type": "integer", "minimum": 0, "maximum": 64},
+            "dialect_byte": {"type": "integer", "minimum": 0, "maximum": 255},
+            "tlv_body_offset": {"type": "integer", "minimum": 0, "maximum": 64},
+            "trailer_bytes": {"type": "integer", "minimum": 0, "maximum": 8},
+            "full_state_min_elements": {"type": "integer", "minimum": 1},
+            "rejected_dialects": {
+              "type": "object",
+              "additionalProperties": {"type": "string"},
+              "description": "Map of hex dialect byte -> why this profile does not claim it. Produces UNSUPPORTED_PROTOCOL_VERSION rather than a bare parse failure."
+            }
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["tag", "name", "type"],
+        "properties": {
+          "tag": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{1,4}$",
+            "description": "Hex string within the 10-bit tag space 0x000-0x3ff. Unique within the profile."
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "snake_case. Becomes the key in decoded state. Unique within the profile."
+          },
+          "type": {"enum": ["enum", "integer", "boolean", "string"]},
+          "values": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": {"pattern": "^[0-9]+$"},
+            "additionalProperties": {"type": "string", "minLength": 1},
+            "description": "Required for type=enum. Decimal-string raw value -> name. Values outside this map decode as '<name>': 'unknown' plus '<name>_raw': <int>; they are reported, never coerced."
+          },
+          "unit": {"type": "string"},
+          "writable": {
+            "type": "boolean",
+            "description": "Documentation only in profile version 1.0."
+          }
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"type": {"const": "enum"}}, "required": ["type"]},
+            "then": {"required": ["values"]}
+          }
+        ]
+      }
+    },
+    "commands": {
+      "type": "array",
+      "maxItems": 0,
+      "description": "Must be empty in version 1.0. Declarative command encoding is deliberately unsupported because a wrong frame reaches real hardware. Use a Level-2 Lua handler or a Level-3 Python adapter to send frames."
+    },
+    "support_status": {
+      "type": "object",
+      "required": ["level", "verification_source", "hardware_tested"],
+      "properties": {
+        "level": {
+          "enum": ["RESEARCH", "CAPTURED", "DECODED", "SIMULATED",
+                   "COMMUNITY_HARDWARE_TESTED", "MAINTAINER_HARDWARE_TESTED",
+                   "LOCAL_OPERATIONAL", "CLOUD_INDEPENDENT"]
+        },
+        "verification_source": {
+          "enum": ["none", "community", "maintainer", "both"]
+        },
+        "hardware_tested": {"type": "boolean"},
+        "known_limitations": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Strongly recommended. State what was NOT done: operations not implemented, checks skipped, whether fixtures are synthetic, firmware/variants not claimed."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "enum": ["COMMUNITY_HARDWARE_TESTED", "MAINTAINER_HARDWARE_TESTED",
+                         "LOCAL_OPERATIONAL", "CLOUD_INDEPENDENT"]
+              }
+            },
+            "required": ["level"]
+          },
+          "then": {"properties": {"hardware_tested": {"const": true}}}
+        },
+        {
+          "if": {
+            "properties": {"level": {"const": "MAINTAINER_HARDWARE_TESTED"}},
+            "required": ["level"]
+          },
+          "then": {
+            "properties": {"verification_source": {"enum": ["maintainer", "both"]}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"level": {"const": "COMMUNITY_HARDWARE_TESTED"}},
+            "required": ["level"]
+          },
+          "then": {
+            "properties": {"verification_source": {"enum": ["community", "both"]}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"hardware_tested": {"const": true}},
+            "required": ["hardware_tested"]
+          },
+          "then": {
+            "properties": {
+              "verification_source": {"enum": ["community", "maintainer", "both"]}
+            }
+          }
+        }
+      ]
+    },
+    "notes": {"type": "string"}
+  }
+}
