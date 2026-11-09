@@ -22,6 +22,9 @@ else. Two independent components:
 They communicate only through the shared `StandardMessage` envelope in
 `integration_contract.py` — neither imports the other.
 
+For the reasoning behind the project -- local ownership, longevity, why it avoids
+firmware replacement, and its current limits -- see [docs/WHY_UALC.md](docs/WHY_UALC.md).
+
 ## What this is NOT (yet)
 
 This repository does not currently give you local control of any real
