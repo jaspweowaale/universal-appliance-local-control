@@ -219,3 +219,15 @@ MIT. Record where your protocol knowledge came from; see
 * [toshiba-tsmartlife-local](https://github.com/jaspweowaale/toshiba-tsmartlife-local)
   — Toshiba/Midea V3 local control, hardware-verified, separate repository.
   UALC does not duplicate it.
+
+## Support Independent Development
+
+This project is independently researched and maintained.
+
+If you find the work useful, you can support continued research, testing,
+documentation, hosting, and development through Ko-fi.
+
+**Support:** https://ko-fi.com/jasperwaale
+
+Contributions are voluntary and do not influence technical findings or project
+decisions.
