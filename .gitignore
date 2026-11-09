@@ -5,3 +5,12 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 .DS_Store
+
+# Credential material. Nothing matching these has ever been committed
+# (verified against full history, 7 commits); these rules exist so that an
+# accidental `git add .` in a working tree that contains a real device
+# credential cannot quietly publish it.
+.env
+.env.*
+*.pem
+*.key
