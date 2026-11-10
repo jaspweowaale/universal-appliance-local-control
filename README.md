@@ -223,14 +223,31 @@ MIT. Record where your protocol knowledge came from; see
   — Toshiba/Midea V3 local control, hardware-verified, separate repository.
   UALC does not duplicate it.
 
-## Support Independent Development
+## Get Involved
 
-This project is independently researched and maintained.
+This project welcomes contributions of time, technical skills, testing,
+documentation, research, and ideas. You do not need to be a programmer to help:
+owning an awkward appliance and describing its behaviour carefully is real
+research, and it is the thing this project is shortest of.
 
-If you find the work useful, you can support continued research, testing,
-documentation, hosting, and development through Ko-fi.
+The routes in, in rough order of usefulness:
 
-**Support:** https://ko-fi.com/jasperwaale
+* **Device profiles and test reports** — see
+  [`docs/contributing/DEVICE_CONTRIBUTION.md`](docs/contributing/DEVICE_CONTRIBUTION.md),
+  or open a device support request from the issue templates.
+* **Issues and pull requests here on GitHub** — read
+  [`CONTRIBUTING.md`](CONTRIBUTING.md) first for scope, licensing, and how
+  protocol knowledge must be sourced and attributed.
+* **Documentation and review** — corrections to
+  [`docs/STATUS_MATRIX.md`](docs/STATUS_MATRIX.md) and the specs are as welcome
+  as code.
+* **Other ways to take part**, including non-technical ones: https://holisticdata.com/get-involved
+
+Voluntary financial contributions are also welcome, to help cover ongoing
+project costs — hosting, development, research and maintenance. They are never
+required in order to take part, and everything above matters more.
+
+**Ko-fi:** https://ko-fi.com/jasperwaale
 
 Contributions are voluntary and do not influence technical findings or project
 decisions.
