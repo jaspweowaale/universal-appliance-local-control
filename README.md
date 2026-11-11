@@ -247,7 +247,12 @@ Voluntary financial contributions are also welcome, to help cover ongoing
 project costs — hosting, development, research and maintenance. They are never
 required in order to take part, and everything above matters more.
 
-**Ko-fi:** https://ko-fi.com/jasperwaale
+**Ko-fi:** https://ko-fi.com/holisticdataprojects
+
+Contributions go through one Ko-fi account, Holistic Data Projects, shared across the
+independent projects. You can support them collectively, or mention this project if you
+would like your contribution to benefit it; project preferences are managed manually
+rather than allocated automatically.
 
 Contributions are voluntary and do not influence technical findings or project
 decisions.
