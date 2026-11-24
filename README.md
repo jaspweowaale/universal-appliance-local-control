@@ -29,6 +29,46 @@ That constraint is the premise of the project, not a caveat on it.
 For the reasoning behind the project -- local ownership, longevity, why it avoids
 firmware replacement, and its current limits -- see [docs/WHY_UALC.md](docs/WHY_UALC.md).
 
+## Firmware governance
+
+**We own our devices. We decide when they update.** Buying a connected
+appliance should not mean the manufacturer can silently change its firmware —
+and with it, its behaviour or capabilities — without the owner's knowledge or
+approval. This is a separate concern from [the firmware-replacement question
+above](docs/WHY_UALC.md): that section is about why UALC talks to a device's
+*existing* stock firmware instead of re-flashing it; this section is about
+keeping that stock firmware from being changed by someone else without asking
+first.
+
+**This is an architectural objective, not a shipped feature.** UALC does not
+currently block, intercept, or prevent any firmware update on any device, on
+any network. What exists today is a small, offline, no-network bookkeeping
+module — [`translator/firmware_registry.py`](translator/firmware_registry.py)
+— that lets a device investigation record a firmware baseline, flag a version
+change, classify an observed network endpoint's likely relationship to
+firmware delivery, and report a protection status (`NATIVE_SWITCH_DISABLED` /
+`NATIVE_SWITCH_AVAILABLE_NOT_SET` / `NETWORK_MITIGATION_ACTIVE` /
+`NO_MITIGATION` / `UNKNOWN`) **without ever claiming a device is protected
+unless that status was actually checked.** It controls nothing and talks to
+no device or cloud — it is data bookkeeping, same spirit as an L1 model
+profile. Actually preventing an update (a native setting, an API call, a
+firewall or DNS rule) is a per-device, per-network implementation outside
+this repository's own scope, done and approved separately each time.
+
+The Toshiba GR-RF900WI-PMV(06)-MG (tracked in
+[`docs/STATUS_MATRIX.md`](docs/STATUS_MATRIX.md) as `LOCAL_OPERATIONAL`) is
+this module's first reference case. Its LAN V3 protocol (the one our sibling
+[toshiba-tsmartlife-local](https://github.com/jaspweowaale/toshiba-tsmartlife-local)
+integration actually uses) has no OTA-related command anywhere in its
+appliance message set. It does carry three bytes, late in the same passive
+discovery broadcast the integration already sends, that an independent
+sibling reverse-engineering project (`nbogojevic/midea-beautiful-air`)
+decodes as a firmware version — our own library reads the same bytes but
+folds them into a generic hex blob instead of exposing them separately.
+Cross-referencing both confirms *where* a firmware-shaped value lives; it
+does not confirm Midea's own internal semantics for it, so it is recorded
+here as a cross-validated **candidate**, not an officially documented field.
+
 ## Community contributions are a primary development goal
 
 **UALC is designed so other developers can add support for appliance brands
@@ -195,6 +235,7 @@ translator/        UALC core: adapters, registry, HA interface, credentials
   profiles.py        Level 1  declarative model profiles
   lua_host.py        Level 2  Lua subprocess host
   adapters/          Level 3  Python protocol adapters
+  firmware_registry.py        offline firmware-governance bookkeeping (no network, no device contact)
 plugins/lua/       Lua SDK + sandbox, and community handlers
 devices/           Level 1 model profiles, by manufacturer
   community/         contributions awaiting a manufacturer directory
