@@ -10,7 +10,7 @@ maintainer *through UALC itself*.** The one hardware-verified appliance below
 was verified through a separate, pre-existing integration, and that
 distinction is kept explicit rather than blurred.
 
-Last updated: 08 11 2026.
+Last updated: 24 11 2026.
 
 ## Devices
 
@@ -19,6 +19,7 @@ Last updated: 08 11 2026.
 | Roborock Q10 (`roborock.vacuum.ss09`) | Roborock | B01 (MQTT/DPS) | `SIMULATED` | 3 — Python adapter | `none` | no | `testing_infra/b01_cloudfree_integration_test.py` (5/5), `b01_bridge_test.py` (9/9) — python-roborock's own device simulator over a real local MQTT/TLS broker |
 | LG PuriCare 360 (`AIR_910604_WW`) | LG | `thinq2_tlv` | `DECODED` | 1 — profile **and** 2 — Lua handler | `none` | no | `devices/lg/AIR_910604_WW.json`, `plugins/lua/examples/lg_air_910604_ww/`, `adapter_contract_test.py` (86/86). **Fixtures are synthetic, not captured.** |
 | Toshiba GR-RF900WI | Toshiba (Midea OEM) | Midea M-Smart V3 | `LOCAL_OPERATIONAL` | not yet a UALC adapter | `maintainer` | **yes** | Verified on hardware via the separate `midea_ac_lan` integration with WAN egress blocked: 19 sensors stayed live, local re-authentication on cached credentials succeeded. **Not implemented in UALC.** Lives at [toshiba-tsmartlife-local](https://github.com/jaspweowaale/toshiba-tsmartlife-local). |
+| Ariston VELIS Lydos | Ariston | BLE GATT (provisioning) | `RESEARCH` | not yet a UALC adapter | `none` | no | [`ARISTON_LYDOS.md`](ARISTON_LYDOS.md) — command set + HMAC auth handshake mapped from the vendor app's decompile; no capture, no simulator, no hardware. Per-device secret origin unresolved. |
 
 ### Why no device is `CLOUD_INDEPENDENT`
 
